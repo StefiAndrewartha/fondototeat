@@ -1,10 +1,11 @@
 const events = {
-    chile: ["Independence Day: September 18", "New Year's Day: January 1"],
-    peru: ["Independence Day: July 28", "Santa Rosa de Lima: August 30"],
-    argentina: ["Independence Day: July 9", "Friendship Day: July 20"],
-    mexico: ["Independence Day: September 16", "Day of the Dead: November 2"],
-    colombia: ["Independence Day: July 20", "Battle of Boyacá: August 7"]
+    chile: ["Día de la Independencia: 18 de septiembre", "Año Nuevo: 1 de enero"],
+    peru: ["Día de la Independencia: 28 de julio", "Santa Rosa de Lima: 30 de agosto"],
+    argentina: ["Día de la Independencia: 9 de julio", "Día del Amigo: 20 de julio"],
+    mexico: ["Día de la Independencia: 16 de septiembre", "Día de los Muertos: 2 de noviembre"],
+    colombia: ["Día de la Independencia: 20 de julio", "Batalla de Boyacá: 7 de agosto"]
 };
+
 
 function updateClock(id, offset) {
     const now = new Date();
@@ -12,11 +13,13 @@ function updateClock(id, offset) {
     const localOffset = now.getTimezoneOffset() * 60000;
     const utc = localTime + localOffset;
     const countryTime = new Date(utc + (3600000 * offset));
-    
+
     const hours = countryTime.getHours().toString().padStart(2, '0');
     const minutes = countryTime.getMinutes().toString().padStart(2, '0');
     const seconds = countryTime.getSeconds().toString().padStart(2, '0');
-    const date = countryTime.toLocaleDateString();
+
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const date = new Intl.DateTimeFormat('es-ES', options).format(countryTime);
 
     document.getElementById(`${id}-clock`).textContent = `${hours}:${minutes}:${seconds}`;
     document.getElementById(`${id}-date`).textContent = date;
