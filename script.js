@@ -1,75 +1,17 @@
-const holidays = {
-    chile: {
-        0: ["Año Nuevo: 1 de enero"], // Enero
-        1: [], // Febrero
-        2: [], // Marzo
-        3: [], // Abril
-        4: [], // Mayo
-        5: [], // Junio
-        6: [], // Julio
-        7: [], // Agosto
-        8: ["Día de la Independencia: 18 de septiembre", "Día de las Glorias del Ejército: 19 de septiembre"], // Septiembre
-        9: [], // Octubre
-        10: [], // Noviembre
-        11: ["Navidad: 25 de diciembre"] // Diciembre
-    },
-    peru: {
-        0: ["Año Nuevo: 1 de enero"], // Enero
-        1: [], // Febrero
-        2: [], // Marzo
-        3: [], // Abril
-        4: [], // Mayo
-        5: [], // Junio
-        6: [], // Julio
-        7: ["Santa Rosa de Lima: 30 de agosto"], // Agosto
-        8: [], // Septiembre
-        9: [], // Octubre
-        10: [], // Noviembre
-        11: ["Navidad: 25 de diciembre"] // Diciembre
-    },
-    argentina: {
-        0: ["Año Nuevo: 1 de enero"], // Enero
-        1: [], // Febrero
-        2: [], // Marzo
-        3: [], // Abril
-        4: [], // Mayo
-        5: [], // Junio
-        6: ["Día de la Independencia: 9 de julio"], // Julio
-        7: ["Día del Amigo: 20 de julio"], // Agosto
-        8: [], // Septiembre
-        9: [], // Octubre
-        10: [], // Noviembre
-        11: ["Navidad: 25 de diciembre"] // Diciembre
-    },
-    mexico: {
-        0: ["Año Nuevo: 1 de enero"], // Enero
-        1: [], // Febrero
-        2: [], // Marzo
-        3: [], // Abril
-        4: [], // Mayo
-        5: [], // Junio
-        6: [], // Julio
-        7: [], // Agosto
-        8: ["Día de la Independencia: 16 de septiembre"], // Septiembre
-        9: [], // Octubre
-        10: ["Día de los Muertos: 2 de noviembre"], // Noviembre
-        11: ["Navidad: 25 de diciembre"] // Diciembre
-    },
-    colombia: {
-        0: ["Año Nuevo: 1 de enero"], // Enero
-        1: [], // Febrero
-        2: [], // Marzo
-        3: [], // Abril
-        4: [], // Mayo
-        5: [], // Junio
-        6: [], // Julio
-        7: [], // Agosto
-        8: [], // Septiembre
-        9: [], // Octubre
-        10: [], // Noviembre
-        11: ["Navidad: 25 de diciembre"] // Diciembre
-    }
+const apiKey = 'bLKeTX81aMspyA6G1JLiIKLYfYQ6Oz0Z'; // Reemplaza esto con tu clave API de Calendarific
+const countries = {
+    chile: 'CL',
+    peru: 'PE',
+    argentina: 'AR',
+    mexico: 'MX',
+    colombia: 'CO'
 };
+
+async function fetchHolidays(countryCode, year, month) {
+    const response = await fetch(`https://calendarific.com/api/v2/holidays?api_key=${apiKey}&country=${countryCode}&year=${year}&month=${month + 1}`);
+    const data = await response.json();
+    return data.response.holidays;
+}
 
 function updateClock(id, offset) {
     const now = new Date();
@@ -87,16 +29,17 @@ function updateClock(id, offset) {
 
     document.getElementById(`${id}-clock`).textContent = `${hours}:${minutes}:${seconds}`;
     document.getElementById(`${id}-date`).textContent = date;
-    updateHolidays(id, countryTime.getMonth());
+    updateHolidays(id, countryTime.getFullYear(), countryTime.getMonth());
 }
 
-function updateHolidays(id, month) {
+async function updateHolidays(id, year, month) {
     const holidaysContainer = document.getElementById(`${id}-events`);
     holidaysContainer.innerHTML = '';
-    const countryHolidays = holidays[id][month];
-    countryHolidays.forEach(holiday => {
+    const countryCode = countries[id];
+    const holidays = await fetchHolidays(countryCode, year, month);
+    holidays.forEach(holiday => {
         const holidayElement = document.createElement('div');
-        holidayElement.textContent = holiday;
+        holidayElement.textContent = `${holiday.name}: ${holiday.date.iso}`;
         holidayElement.classList.add('event');
         holidaysContainer.appendChild(holidayElement);
     });
@@ -111,3 +54,4 @@ function startClocks() {
 }
 
 startClocks();
+
